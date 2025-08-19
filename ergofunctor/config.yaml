@@ -1,0 +1,350 @@
+meta:
+  engine: 4.1.0
+# U: 19.05 # 19.05mm MX spacing
+# u: 19 # 19mm MX spacing
+# cx: 18 # 18mm Choc X spacing
+# cy: 17 # 17mm Choc Y spacing
+units:
+  # Proxy Spacing Variables
+  kx: U
+  ky: U
+  # Padding Variables
+  P: 4
+  px: kx + P
+  py: ky + P
+
+  mcux: 18
+  mcuy: 36
+  jacky: 6
+  jackx: 14
+  oledx: 12
+  oledy: 5
+  
+
+points:
+  zones:
+    pinky:
+      anchor:
+        rotate: 5
+        shift: [50,-100] # Fix KiCad placement
+      columns:
+        outer:
+          key.column_net: C_P_OUTER
+          rows.bottom.skip: true
+          # key.stagger: 19
+        inner:
+          key.column_net: C_P_INNER
+          key.stagger: 0.25ky
+      rows:
+        bottom:
+          padding: ky
+          row_net: R_BOT
+        home:
+          padding: ky
+          row_net: R_HOME
+        top:
+          padding: ky
+          row_net: R_TOP
+    matrix:
+      anchor:
+        ref: pinky_inner_bottom
+        shift: [20, 0]
+      columns:
+        ring:
+          key.column_net: C_M_RING
+          key.splay: -5
+          key.stagger: 0.66ky
+        middle:
+          key.column_net: C_M_MIDDLE
+          key.stagger: 0.25ky
+        index:
+          key.column_net: C_M_INDEX
+          key.stagger: -0.45ky
+        inner:
+          key.column_net: C_M_INNER
+          key.stagger: -0.15ky
+      rows:
+        bottom:
+          padding: ky
+          row_net: R_BOT
+        home:
+          padding: ky
+          row_net: R_HOME
+        top:
+          padding: ky
+          row_net: R_TOP
+    thumb_top:
+      anchor:
+        ref: matrix_index_bottom
+        # shift: [0.66U, -1.25U]
+        shift: [.8kx, -1.3ky]
+        rotate: -20
+      columns:
+        outer:
+          key.column_net: C_P_INNER
+          key.spread: ky
+        middle:
+          key.column_net: C_M_RING
+          key.spread: ky
+      rows:
+        row:
+          row_net: R_THUMB
+
+    thumb_bottom:
+      anchor:
+        ref: thumb_top_outer_row
+        shift: [0, -ky]
+      columns:
+        outer:
+          key.column_net: C_M_MIDDLE
+          key.spread: ky
+        middle:
+          key.column_net: C_M_INDEX
+          key.spread: ky
+        inner:
+          key.column_net: C_M_INNER
+          key.name: thumb_inner
+          key.spread: 1.2kx
+          # key.stagger: -0.7ky
+          # rows.top.skip: true
+          key.width: 1.5kx
+          # key.rotate: 90
+          key.splay: 90
+          key.shift: [0,0]
+          # key.splay: -15
+          # key.origin: [-0.5kx, -0.5ky]
+      rows:
+        row:
+          row_net: R_THUMB
+
+outlines:
+  raw:
+    - what: rectangle
+      where: true
+      bound: true
+      size: [px, py]
+  keys:
+    - what: rectangle
+      where: true
+      bound: false
+      size: [kx-0.5,ky-0.5]
+  board:
+    - what: polygon
+      operation: stack
+      points:
+        ## pinky top
+        - ref: pinky_outer_top
+          shift: [-0.5px, 0.5py]
+        - ref: pinky_outer_top
+          shift: [0.5px - 1.5P, 0.5py]
+        - ref: pinky_inner_top
+          shift: [-0.5px + 0.5P, 0.5py]
+        - ref: pinky_inner_top
+          shift: [0.5px-P, 0.5py]
+
+        ## matrix top
+        - ref: matrix_ring_top
+          shift: [-0.5px,0.5py-0.66ky+P]
+        - ref: matrix_ring_top
+          shift: [-0.5px,0.5py]
+        - ref: matrix_ring_top
+          shift: [0.5px - 1.5P, 0.5py]
+
+        - ref: matrix_middle_top
+          shift: [-0.5px + 0.5P, 0.5py]
+        - ref: matrix_middle_top
+          shift: [0.5px, 0.5py]
+        # - ref: matrix_middle_top
+        #   shift: [0.5px+0.5,0.5py-0.5P]
+        # - ref: matrix_middle_top
+        #   shift: [0.5px+0.5,0.5py]
+
+        - ref: matrix_index_top
+          shift: [-0.5px + 1P, 0.5py]
+        - ref: matrix_index_top
+          shift: [0.5px, 0.5py]
+
+        - ref: matrix_inner_top
+          shift: [-0.5px + 1P, 0.5py]
+        - ref: matrix_inner_top
+          shift: [0.5px + mcux + P, 0.5py]
+
+        ## mcu bottom 
+        - ref: matrix_inner_top
+          shift: [0.5px + mcux + P, 0.5py - mcuy - oledy - P - jacky - P]
+        - ref: matrix_inner_top
+          shift: [0.5px , 0.5py - mcuy - oledy - P - jacky - P]
+        - ref: matrix_inner_bottom
+          shift: [0.5px , -0.5py]
+
+        ## thumb top
+        - ref: thumb_top_middle_row
+          shift: [-0.5px + 2P,0.5py]
+        - ref: thumb_top_middle_row
+          shift: [0.5px, 0.5py]
+
+        ## joystick
+        # shift y w teorii (0.5py + ((1.5kx-kx)/2))
+        # ale joystick ma 26 mm szerokości
+        - ref: thumb_inner
+          orient: -90 # thumb_inner is rotated
+          shift: [-0.5px , 13 + P]
+        - ref: thumb_inner
+          orient: -90 # thumb_inner is rotated
+          shift: [0.5px, 13 + P]
+        - ref: thumb_inner
+          orient: -90 # thumb_inner is rotated
+          shift: [0.5px, -(13 + P)]
+        - ref: thumb_inner
+          orient: -90 # thumb_inner is rotated
+          shift: [-0.5px + P/2,-(13 + P)]
+
+        ## thumb cluster bottom
+        - ref: thumb_bottom_middle_row
+          shift: [0.5px - P/2,-0.5py]
+        - ref: thumb_bottom_outer_row
+          shift: [-0.5px , -0.5py]
+        - ref: thumb_bottom_outer_row
+          shift: [-0.5px - P , -0.5py + P]
+
+        ## pinky bottom
+        - ref: pinky_inner_bottom
+          shift: [-0.5px,-0.5py]
+        - ref: pinky_outer_home
+          shift: [0.5px - P,-0.5py - P]
+        - ref: pinky_outer_home
+          shift: [0.5px - 2P,-0.5py]
+        - ref: pinky_outer_home
+          shift: [-0.5px,-0.5py]
+      fillet: 0
+  combo:
+    - name: board
+    - operation: subtract
+      name: keys
+
+
+
+pcbs:
+  ergofunctor:
+    template: kicad8
+    outlines:
+      main:
+        outline: board
+    footprints:
+      # TODO: dodać logo LAG (pingwinek) (patrz josukey)
+      # TODO: dodać napis LAG
+      keys:
+        what: mx
+        where: 
+          - /matrix/
+          - /pinky/
+          - /thumb_top/
+          - /thumb_bottom/
+          - /thumb_inner/
+        params:
+          from: "{{column_net}}"
+          to: "{{colrow}}"
+          keycaps: true
+          reverse: true
+          hotswap: true
+      diode:
+        what: diode_tht_sod123
+        where: true
+        params:
+          from: "{{colrow}}"
+          to: "{{row_net}}"
+        adjust:
+          shift: [0, -5]
+      mcu:
+        # TODO: zmienić napisy z footprintu: promicro -> ergofunctor
+        what: promicro_pretty
+        params:
+          # orientation: "down"
+          # label: false 
+          # instructions: false 
+          reversable_pins: 13
+        # TODO: poprwaić placement
+        where:
+          - ref: matrix_inner_top
+            # te 2.5 bo ten footprint dodaje napis nad MCU
+            shift: [0.5px + 0.5mcux, -0.5mcuy + 0.5ky + 2.5] 
+            # rotate: -90
+      oled:
+        what: oled
+        params:
+          side: "F"
+          SDA: P2
+          SCL: P3
+        # TODO: poprwaić placement
+        where:
+          ref: matrix_inner_top
+          shift: [0.5px + 0.5mcux - 6, -mcuy + 0.5ky - 0.5oledy ]
+          rotate: 90
+      reset: 
+        # what: button  
+        # params:
+        #   from: GND
+        #   to: RST
+        what: wuerth-434121025816 
+        params:
+          r1: RST
+          r2: GND
+
+        # TODO: poprwaić placement
+        where:
+          ref: matrix_inner_top
+          shift: [0.5px + 0mcux, -mcuy + 0.5ky - 0.5oledy ]
+          rotate: -90
+     
+      # TODO: zstanowić się czy TRRS potrzebny,
+      # czy ktoś będzie chiał mieć wired wersje
+      # a może po prostu druga wersja pcb
+      jack: 
+        what: trrs
+        # TODO: podłączyć do mcu
+        params:
+          reverse: true
+          A: ""
+          B: ""
+          C: ""
+          D: ""
+        # TODO: poprwaić placement
+        where:
+          ref: matrix_inner_top
+          shift: [0.5px + mcux, -mcuy + 0.5ky - oledy - 0.5jacky - P ]
+          rotate: -90
+
+      battery_connector:
+        what: jst-s2b-ph-kl
+        params:
+          neg: B- 
+          pos: pos
+        # TODO: poprwaić placement
+        where:
+          ref: matrix_inner_top
+          shift: [0.5px + mcux, -mcuy + 0.5ky - 0.5oledy ]
+          rotate: 180
+
+      on_off_switch:
+        what: pcm12
+        # TODO: zmienić na RAW - GND 
+        params:
+          from: pos
+          to: B+
+        # TODO: poprwaić placement
+        where:
+          ref: matrix_inner_top
+          shift: [32, 3]
+          rotate: 90
+
+          #TODO: dodrobić mounting hole na joystick:
+          # 13 mm od siebie po 1 mm 
+          # nad i pod thumb_inner
+          #
+          # TODO: zrobić przerwe na listwe 
+          # TODO: dodać footprint na port do listwy joysticka (https://www.amphenol-cs.com/product/sfv5r1ste1hlf.html)
+
+
+
+          #TODO: znaleść foot print na taki reset buttown:
+          # https://pl.aliexpress.com/item/1005005467675501.html?spm=a2g0o.detail.pcDetailTopMoreOtherSeller.4.4c99UDJxUDJxdl&gps-id=pcDetailTopMoreOtherSeller&scm=1007.40050.354490.0&scm_id=1007.40050.354490.0&scm-url=1007.40050.354490.0&pvid=e755b253-656f-497e-aa2f-6ed1e59475bd&_t=gps-id:pcDetailTopMoreOtherSeller,scm-url:1007.40050.354490.0,pvid:e755b253-656f-497e-aa2f-6ed1e59475bd,tpp_buckets:668%232846%238110%231995&pdp_ext_f=%7B%22order%22%3A%2245%22%2C%22eval%22%3A%221%22%2C%22sceneId%22%3A%2230050%22%7D&pdp_npi=6%40dis%21PLN%214.86%214.79%21%21%211.30%211.28%21%40211b441e17556272241271580e3dc4%2112000033198615781%21rec%21PL%214617355533%21X%211%210%21n_tag%3A-29919%3Bm03_new_user%3A-29895&utparam-url=scene%3ApcDetailTopMoreOtherSeller%7Cquery_from%3A%7Cx_object_id%3A1005005467675501%7C_p_origin_prod%3A
